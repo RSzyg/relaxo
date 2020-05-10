@@ -31,7 +31,11 @@ const Board = ({board = []}) => {
                 } else if (g.status === 'fail') {
                   gridProps.style.push(styles.textFail);
                 }
-                gridProps.children = <Text style={styles.text}>{g.value}</Text>;
+                if (g.value - 1 > 0) {
+                  gridProps.children = (
+                    <Text style={styles.text}>{g.value - 1}</Text>
+                  );
+                }
               }
 
               if (gIdx !== 0) {

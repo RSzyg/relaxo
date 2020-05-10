@@ -1,1 +1,1 @@
-export const LevelList = [[[1, 0], [-1, -1], [1, 0]]];
+export const LevelList = [[[2, 0], [-1, -1], [2, 0]]];
