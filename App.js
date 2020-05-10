@@ -11,11 +11,9 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="Transition"
-          component={Transition}
-          options={{headerShown: false}}
-        />
+        <Stack.Screen name="Transition" options={{headerShown: false}}>
+          {props => <Transition {...props} level={0} />}
+        </Stack.Screen>
         <Stack.Screen
           name="Level"
           component={Level}

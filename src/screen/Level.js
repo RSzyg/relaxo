@@ -11,7 +11,9 @@ const directionMap = {
   down: [0, 1],
 };
 
-const Level = ({level = 0}) => {
+const Level = ({route, navigation}) => {
+  const {level} = route.params;
+
   const [curBoard, setCurBoard] = useState(
     LevelList[level].map((row, rIdx) => ({
       id: `${level}-row-${rIdx}`,
@@ -27,6 +29,28 @@ const Level = ({level = 0}) => {
   const [direction, setDirection] = useState(undefined);
   const [preview, setPreview] = useState([]);
   const [success, setSuccess] = useState(false);
+
+  const toNextLevel = () => {
+    setTimeout(() => {
+      navigation.navigate('Transition', {
+        level: (level + 1) % LevelList.length,
+      });
+    }, 500);
+  };
+
+  const checkIfWin = nextBoard => {
+    for (let i = 0; i < nextBoard.length; i++) {
+      const row = nextBoard[i];
+      for (let j = 0; j < row.grids.length; j++) {
+        const grid = row.grids[j];
+        if (grid.value === 0) {
+          return false;
+        }
+      }
+    }
+    toNextLevel();
+    return true;
+  };
 
   const handleDirectionChange = dir => {
     let isSuccess = true;
@@ -112,6 +136,8 @@ const Level = ({level = 0}) => {
         }
       });
       setCurBoard(nextBoard);
+
+      checkIfWin(nextBoard);
     }
     setPreview([]);
 

@@ -1,7 +1,11 @@
 import React, {useEffect} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
-const Transition = ({level = 0, navigation}) => {
+const Transition = ({level, route, navigation}) => {
+  if (route.params) {
+    level = route.params.level;
+  }
+
   useEffect(() => {
     setTimeout(() => {
       navigation.navigate('Level', {level});
