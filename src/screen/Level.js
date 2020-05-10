@@ -1,13 +1,24 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 
 import Board from '../component/Board';
-import {level} from '../common/config';
+import {LevelList} from '../common/config';
 
-const Level = () => {
+const Level = ({level = 0}) => {
+  const [curBoard] = useState(
+    LevelList[level].map((row, rIdx) => ({
+      id: `${level}-row-${rIdx}`,
+      grids: row.map((grid, gIdx) => ({
+        id: `${level}-grid-${gIdx}`,
+        status: 'basic',
+        value: grid,
+      })),
+    })),
+  );
+
   return (
     <View style={styles.container}>
-      <Board board={level[0]} />
+      <Board board={curBoard} />
     </View>
   );
 };
@@ -18,6 +29,7 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#212121',
   },
 });
 
