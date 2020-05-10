@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useMemo} from 'react';
 import {View, StyleSheet, PanResponder} from 'react-native';
 
 import Board from '../component/Board';
@@ -27,8 +27,6 @@ const Level = ({route, navigation}) => {
   const width = useMemo(() => LevelList[level][0].length, [level]);
   const height = useMemo(() => LevelList[level].length, [level]);
   const [direction, setDirection] = useState(undefined);
-  const [preview, setPreview] = useState([]);
-  const [success, setSuccess] = useState(false);
 
   const toNextLevel = () => {
     setTimeout(() => {
@@ -52,96 +50,72 @@ const Level = ({route, navigation}) => {
     return true;
   };
 
-  const handleDirectionChange = dir => {
-    let isSuccess = true;
-    const needPreview = [];
-    const nextBoard = JSON.parse(JSON.stringify(curBoard));
-    nextBoard.forEach((row, rIdx) => {
-      row.grids.forEach((grid, gIdx) => {
-        if (dir && grid.value > 1) {
-          let [y, x, val] = [rIdx, gIdx, grid.value - 1];
-          while (val > 0) {
-            // check border
-            if (
-              x + directionMap[dir][0] * val < 0 ||
-              x + directionMap[dir][0] * val >= width ||
-              y + directionMap[dir][1] * val < 0 ||
-              y + directionMap[dir][1] * val >= height
-            ) {
-              isSuccess = false;
-              break;
-            }
-
-            // check cur grid content
-            x += directionMap[dir][0];
-            y += directionMap[dir][1];
-            if (nextBoard[y].grids[x].value === -1) {
-              isSuccess = false;
-              break;
-            }
-            if (nextBoard[y].grids[x].value === 0) {
-              val -= 1;
-            }
-          }
-
-          // add grid index into need preview list
-          needPreview.push([rIdx, gIdx]);
-        } else {
-          grid.status = 'basic';
-        }
-      });
-    });
-
-    // update grid preview
-    needPreview.forEach(pair => {
-      let [y, x] = pair;
-      while (x >= 0 && x < width && y >= 0 && y < height) {
-        if (nextBoard[y].grids[x].value === -1) {
-          break;
-        }
-        if (nextBoard[y].grids[x].value === 1) {
-          x += directionMap[dir][0];
-          y += directionMap[dir][1];
-          continue;
-        }
-        nextBoard[y].grids[x].status = isSuccess ? 'success' : 'fail';
-        x += directionMap[dir][0];
-        y += directionMap[dir][1];
-      }
-    });
-    setCurBoard(nextBoard);
-    setPreview(needPreview);
-    setSuccess(isSuccess);
-  };
-
   const handleRelease = () => {
-    if (success) {
-      const nextBoard = JSON.parse(JSON.stringify(curBoard));
-      preview.forEach(pair => {
-        let [y, x] = pair;
-        let val = nextBoard[y].grids[x].value;
-        while (val > 0) {
-          if (nextBoard[y].grids[x].value === -1) {
-            break;
-          }
-          if (nextBoard[y].grids[x].value === 1) {
-            x += directionMap[direction][0];
-            y += directionMap[direction][1];
-            continue;
-          }
-          nextBoard[y].grids[x].value = 1;
-          x += directionMap[direction][0];
-          y += directionMap[direction][1];
-          val -= 1;
-        }
-      });
-      setCurBoard(nextBoard);
-
-      checkIfWin(nextBoard);
+    const dir = direction;
+    let rowStart = 0;
+    let rowEnd = height;
+    let rowAdd = 1;
+    let colStart = 0;
+    let colEnd = width;
+    let colAdd = 1;
+    if (dir === 'left') {
+      colStart = width - 1;
+      colEnd = -1;
+      colAdd = -1;
+    } else if (dir === 'up') {
+      rowStart = height - 1;
+      rowEnd = -1;
+      rowAdd = -1;
     }
-    setPreview([]);
+    const nextBoard = JSON.parse(JSON.stringify(curBoard));
+    let [i, j] = [rowStart, colStart];
+    while (i !== rowEnd) {
+      j = colStart;
+      while (j !== colEnd) {
+        if (nextBoard[i].grids[j].value > 1) {
+          let val = nextBoard[i].grids[j].value - 1;
+          let [y, x] = [i, j];
+          let [fy, fx] = [i, j];
+          nextBoard[i].grids[j].value = 1;
+          while (val > 0) {
+            const nextX = x + directionMap[dir][0];
+            const nextY = y + directionMap[dir][1];
+            if (
+              nextX < 0 ||
+              nextX >= width ||
+              nextY < 0 ||
+              nextY >= height ||
+              nextBoard[nextY].grids[nextX].value === -1
+            ) {
+              if (nextBoard[y].grids[x].value !== 1) {
+                nextBoard[y].grids[x].value += val;
+              } else {
+                nextBoard[fy].grids[fx].value += val;
+              }
+              break;
+            }
+            x = nextX;
+            y = nextY;
+            if (nextBoard[y].grids[x].value === 0) {
+              nextBoard[y].grids[x].value++;
+              val--;
+              fy = y;
+              fx = x;
+            } else if (nextBoard[y].grids[x].value > 1) {
+              nextBoard[y].grids[x].value += val;
+              val = 0;
+            }
+          }
+        }
+        j += colAdd;
+      }
+      i += rowAdd;
+    }
+    setCurBoard(nextBoard);
 
     setDirection(undefined);
+
+    checkIfWin(nextBoard);
   };
 
   const panResponder = PanResponder.create({
@@ -163,11 +137,6 @@ const Level = ({route, navigation}) => {
     },
     onPanResponderRelease: handleRelease,
   });
-
-  useEffect(() => {
-    handleDirectionChange(direction);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [direction]);
 
   return (
     <View style={styles.container} {...panResponder.panHandlers}>
