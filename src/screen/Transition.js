@@ -7,10 +7,14 @@ const Transition = ({level, route, navigation}) => {
   }
 
   useEffect(() => {
-    setTimeout(() => {
-      navigation.navigate('Level', {level});
-    }, 500);
-  });
+    const unsubscribe = navigation.addListener('focus', () => {
+      setTimeout(() => {
+        navigation.navigate('Level', {level});
+      }, 500);
+    });
+
+    return unsubscribe;
+  }, [level, navigation]);
 
   return (
     <View style={styles.container}>
