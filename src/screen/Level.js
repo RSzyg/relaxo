@@ -51,71 +51,73 @@ const Level = ({route, navigation}) => {
   };
 
   const handleRelease = () => {
-    const dir = direction;
-    let rowStart = 0;
-    let rowEnd = height;
-    let rowAdd = 1;
-    let colStart = 0;
-    let colEnd = width;
-    let colAdd = 1;
-    if (dir === 'left') {
-      colStart = width - 1;
-      colEnd = -1;
-      colAdd = -1;
-    } else if (dir === 'up') {
-      rowStart = height - 1;
-      rowEnd = -1;
-      rowAdd = -1;
-    }
-    const nextBoard = JSON.parse(JSON.stringify(curBoard));
-    let [i, j] = [rowStart, colStart];
-    while (i !== rowEnd) {
-      j = colStart;
-      while (j !== colEnd) {
-        if (nextBoard[i].grids[j].value > 1) {
-          let val = nextBoard[i].grids[j].value - 1;
-          let [y, x] = [i, j];
-          let [fy, fx] = [i, j];
-          nextBoard[i].grids[j].value = 1;
-          while (val > 0) {
-            const nextX = x + directionMap[dir][0];
-            const nextY = y + directionMap[dir][1];
-            if (
-              nextX < 0 ||
-              nextX >= width ||
-              nextY < 0 ||
-              nextY >= height ||
-              nextBoard[nextY].grids[nextX].value === -1
-            ) {
-              if (nextBoard[y].grids[x].value !== 1) {
-                nextBoard[y].grids[x].value += val;
-              } else {
-                nextBoard[fy].grids[fx].value += val;
+    if (direction) {
+      const dir = direction;
+      let rowStart = 0;
+      let rowEnd = height;
+      let rowAdd = 1;
+      let colStart = 0;
+      let colEnd = width;
+      let colAdd = 1;
+      if (dir === 'left') {
+        colStart = width - 1;
+        colEnd = -1;
+        colAdd = -1;
+      } else if (dir === 'up') {
+        rowStart = height - 1;
+        rowEnd = -1;
+        rowAdd = -1;
+      }
+      const nextBoard = JSON.parse(JSON.stringify(curBoard));
+      let [i, j] = [rowStart, colStart];
+      while (i !== rowEnd) {
+        j = colStart;
+        while (j !== colEnd) {
+          if (nextBoard[i].grids[j].value > 1) {
+            let val = nextBoard[i].grids[j].value - 1;
+            let [y, x] = [i, j];
+            let [fy, fx] = [i, j];
+            nextBoard[i].grids[j].value = 1;
+            while (val > 0) {
+              const nextX = x + directionMap[dir][0];
+              const nextY = y + directionMap[dir][1];
+              if (
+                nextX < 0 ||
+                nextX >= width ||
+                nextY < 0 ||
+                nextY >= height ||
+                nextBoard[nextY].grids[nextX].value === -1
+              ) {
+                if (nextBoard[y].grids[x].value !== 1) {
+                  nextBoard[y].grids[x].value += val;
+                } else {
+                  nextBoard[fy].grids[fx].value += val;
+                }
+                break;
               }
-              break;
-            }
-            x = nextX;
-            y = nextY;
-            if (nextBoard[y].grids[x].value === 0) {
-              nextBoard[y].grids[x].value++;
-              val--;
-              fy = y;
-              fx = x;
-            } else if (nextBoard[y].grids[x].value > 1) {
-              nextBoard[y].grids[x].value += val;
-              val = 0;
+              x = nextX;
+              y = nextY;
+              if (nextBoard[y].grids[x].value === 0) {
+                nextBoard[y].grids[x].value++;
+                val--;
+                fy = y;
+                fx = x;
+              } else if (nextBoard[y].grids[x].value > 1) {
+                nextBoard[y].grids[x].value += val;
+                val = 0;
+              }
             }
           }
+          j += colAdd;
         }
-        j += colAdd;
+        i += rowAdd;
       }
-      i += rowAdd;
+      setCurBoard(nextBoard);
+
+      checkIfWin(nextBoard);
     }
-    setCurBoard(nextBoard);
 
     setDirection(undefined);
-
-    checkIfWin(nextBoard);
   };
 
   const panResponder = PanResponder.create({
