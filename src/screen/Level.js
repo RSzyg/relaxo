@@ -3,6 +3,18 @@ import {View, StyleSheet, PanResponder} from 'react-native';
 
 import Board from '../component/Board';
 import {LevelList} from '../common/config';
+import Toolbar from '../component/Toolbar';
+
+const decodeBoard = (board, level) => {
+  return board.map((row, rIdx) => ({
+    id: `${level}-row-${rIdx}`,
+    grids: row.map((grid, gIdx) => ({
+      id: `${level}-grid-${gIdx}`,
+      status: 'basic',
+      value: grid,
+    })),
+  }));
+};
 
 const directionMap = {
   left: [-1, 0],
@@ -15,18 +27,18 @@ const Level = ({route, navigation}) => {
   const {level} = route.params;
 
   const [curBoard, setCurBoard] = useState(
-    LevelList[level].map((row, rIdx) => ({
-      id: `${level}-row-${rIdx}`,
-      grids: row.map((grid, gIdx) => ({
-        id: `${level}-grid-${gIdx}`,
-        status: 'basic',
-        value: grid,
-      })),
-    })),
+    decodeBoard(LevelList[level], level),
   );
   const width = useMemo(() => LevelList[level][0].length, [level]);
   const height = useMemo(() => LevelList[level].length, [level]);
   const [direction, setDirection] = useState(undefined);
+
+  const [showToolbar, setShowToolbar] = useState(false);
+
+  const handleReset = () => {
+    const nextBoard = decodeBoard(LevelList[level], level);
+    setCurBoard(nextBoard);
+  };
 
   const toNextLevel = () => {
     setTimeout(() => {
@@ -122,6 +134,9 @@ const Level = ({route, navigation}) => {
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: () => {
+      setShowToolbar(false);
+    },
     onPanResponderMove: (_, {dx, dy}) => {
       if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)) {
         if (dx > 0) {
@@ -141,9 +156,16 @@ const Level = ({route, navigation}) => {
   });
 
   return (
-    <View style={styles.container} {...panResponder.panHandlers}>
-      <Board board={curBoard} />
-    </View>
+    <>
+      <View style={styles.container} {...panResponder.panHandlers}>
+        <Board board={curBoard} />
+      </View>
+      <Toolbar
+        visible={showToolbar}
+        setVisible={setShowToolbar}
+        onReset={handleReset}
+      />
+    </>
   );
 };
 
@@ -153,7 +175,7 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#212121',
+    backgroundColor: '#424242',
   },
 });
 
