@@ -1,5 +1,6 @@
 import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet} from 'react-native';
+import Grid from './Grid';
 
 const Board = ({board = []}) => {
   return (
@@ -12,37 +13,24 @@ const Board = ({board = []}) => {
         return (
           <View {...rowProps}>
             {r.grids.map((g, gIdx) => {
-              const gridProps = {
+              const gridWrapperProps = {
                 key: g.id,
                 style: [styles.gridContainer],
               };
 
-              if (g.value === 0) {
-                gridProps.style.push(styles.basicGrid);
-                if (g.status === 'success') {
-                  gridProps.style.push(styles.basicSuccess);
-                } else if (g.status === 'fail') {
-                  gridProps.style.push(styles.basicFail);
-                }
-              } else if (g.value > 0) {
-                gridProps.style.push(styles.textGrid);
-                if (g.status === 'success') {
-                  gridProps.style.push(styles.textSuccess);
-                } else if (g.status === 'fail') {
-                  gridProps.style.push(styles.textFail);
-                }
-                if (g.value - 1 > 0) {
-                  gridProps.children = (
-                    <Text style={styles.text}>{g.value - 1}</Text>
-                  );
-                }
+              if (g.value >= 0) {
+                gridWrapperProps.style.push(styles.basicGridWrapper);
               }
 
               if (gIdx !== 0) {
-                gridProps.style.push(styles.overlapLeft);
+                gridWrapperProps.style.push(styles.overlapLeft);
               }
 
-              return <View {...gridProps} />;
+              return (
+                <View {...gridWrapperProps}>
+                  <Grid changed={g.changed} value={g.value} />
+                </View>
+              );
             })}
           </View>
         );
@@ -61,45 +49,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  basicGrid: {
+  basicGridWrapper: {
     borderWidth: 1,
     borderColor: '#fff',
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  textGrid: {
-    borderWidth: 1,
-    borderColor: '#fff',
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
-  },
-  basicSuccess: {
-    borderColor: '#00E676',
-    backgroundColor: 'rgba(27, 94, 32, 0.4)',
-    zIndex: 100,
-  },
-  textSuccess: {
-    borderColor: '#00E676',
-    backgroundColor: 'rgba(102, 187, 106, 0.5)',
-    zIndex: 100,
-  },
-  basicFail: {
-    borderColor: '#FF1744',
-    backgroundColor: 'rgba(183, 28, 28, 0.4)',
-    zIndex: 100,
-  },
-  textFail: {
-    borderColor: '#FF1744',
-    backgroundColor: 'rgba(239, 83, 80, 0.5)',
-    zIndex: 100,
   },
   overlapLeft: {
     marginLeft: -1,
   },
   overlapTop: {
     marginTop: -1,
-  },
-  text: {
-    fontSize: 18,
-    color: '#fff',
   },
 });
 

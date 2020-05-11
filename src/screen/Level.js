@@ -12,8 +12,18 @@ const decodeBoard = (board, level) => {
       id: `${level}-grid-${gIdx}`,
       status: 'basic',
       value: grid,
+      changed: false,
     })),
   }));
+};
+
+const clearStatus = board => {
+  board.forEach(row => {
+    row.grids.forEach(grid => {
+      grid.changed = false;
+    });
+  });
+  return board;
 };
 
 const directionMap = {
@@ -80,7 +90,7 @@ const Level = ({route, navigation}) => {
         rowEnd = -1;
         rowAdd = -1;
       }
-      const nextBoard = JSON.parse(JSON.stringify(curBoard));
+      const nextBoard = clearStatus(JSON.parse(JSON.stringify(curBoard)));
       let [i, j] = [rowStart, colStart];
       while (i !== rowEnd) {
         j = colStart;
@@ -114,9 +124,11 @@ const Level = ({route, navigation}) => {
                 val--;
                 fy = y;
                 fx = x;
+                nextBoard[y].grids[x].changed = true;
               } else if (nextBoard[y].grids[x].value > 1) {
                 nextBoard[y].grids[x].value += val;
                 val = 0;
+                nextBoard[y].grids[x].changed = true;
               }
             }
           }
