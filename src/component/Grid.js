@@ -14,45 +14,49 @@ const Grid = ({offset, value, changed, resetFlag}) => {
       duration,
       delay,
       useNativeDriver: true,
-    }).start();
+    });
 
   useEffect(() => {
-    containerWidth.setValue(0);
-    internalWidth.setValue(0);
     const delay = getRandomInt(300, 10);
-    Animated.parallel([
-      scaleIn(containerWidth, 1, delay),
-      scaleIn(internalWidth, 1, delay),
-    ]);
+    if (value >= 0) {
+      const anim = [scaleIn(containerWidth, 1, delay)];
+      containerWidth.setValue(0);
+      if (value > 0) {
+        anim.push(scaleIn(internalWidth, 1, delay));
+        internalWidth.setValue(0);
+      }
+      Animated.parallel(anim).start();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetFlag]);
 
   useEffect(() => {
     if (changed) {
       internalWidth.setValue(0);
-      scaleIn(internalWidth, 1, (changed - 1) * 60);
+      scaleIn(internalWidth, 1, (changed - 1) * 60).start();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [changed]);
 
   return (
     <View style={[styles.container, {left: offset * -1}]}>
-      <Animated.View
-        style={[
-          styles.borderContainer,
-          value >= 0 && styles.border,
-          {transform: [{scale: containerWidth}]},
-        ]}
-      />
-      <View style={value >= 0 && styles.internal}>
+      {value >= 0 && (
         <Animated.View
           style={[
-            value > 0 && styles.withValue,
-            {transform: [{scale: internalWidth}]},
-          ]}>
-          {value > 1 && <Text style={styles.text}>{value - 1}</Text>}
-        </Animated.View>
-      </View>
+            styles.borderContainer,
+            styles.border,
+            {transform: [{scale: containerWidth}]},
+          ]}
+        />
+      )}
+      {value > 0 && (
+        <View style={styles.internal}>
+          <Animated.View
+            style={[styles.withValue, {transform: [{scale: internalWidth}]}]}>
+            {value > 1 && <Text style={styles.text}>{value - 1}</Text>}
+          </Animated.View>
+        </View>
+      )}
     </View>
   );
 };
