@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import Grid from './Grid';
 
-const Board = ({board = []}) => {
+const Board = ({board = [], resetFlag}) => {
   return (
     <View>
       {board.map((r, rIdx) => {
@@ -19,6 +19,7 @@ const Board = ({board = []}) => {
                   overlap={gIdx}
                   value={g.value}
                   changed={g.changed}
+                  resetFlag={resetFlag}
                 />
               );
             })}

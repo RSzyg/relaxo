@@ -4,27 +4,28 @@ import {StyleSheet, View, Text, Animated} from 'react-native';
 import {getRandomInt} from '../common/utils';
 import {tintColor} from '../common/theme';
 
-const Grid = ({overlap, value, changed}) => {
+const Grid = ({overlap, value, changed, resetFlag}) => {
   const containerWidth = useRef(new Animated.Value(0)).current;
   const internalWidth = useRef(new Animated.Value(0)).current;
 
-  const scaleIn = (animValue, toValue, delay = 0, duration = 240) => {
+  const scaleIn = (animValue, toValue, delay = 0, duration = 240) =>
     Animated.timing(animValue, {
       toValue,
       duration,
       delay,
       useNativeDriver: true,
     }).start();
-  };
 
   useEffect(() => {
+    containerWidth.setValue(0);
+    internalWidth.setValue(0);
     const delay = getRandomInt(300, 10);
     Animated.parallel([
       scaleIn(containerWidth, 1, delay),
       scaleIn(internalWidth, 1, delay),
     ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [resetFlag]);
 
   useEffect(() => {
     if (changed) {

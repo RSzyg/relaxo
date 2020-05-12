@@ -46,9 +46,12 @@ const Level = ({route, navigation}) => {
 
   const [showToolbar, setShowToolbar] = useState(false);
 
+  const [resetFlag, setResetFlag] = useState(0);
+
   const handleReset = () => {
     const nextBoard = decodeBoard(LevelList[level], level);
     setCurBoard(nextBoard);
+    setResetFlag(flag => flag + 1);
   };
 
   const toNextLevel = () => {
@@ -178,7 +181,7 @@ const Level = ({route, navigation}) => {
   return (
     <>
       <View style={styles.container} {...panResponder.panHandlers}>
-        <Board board={curBoard} />
+        <Board board={curBoard} resetFlag={resetFlag} />
       </View>
       <Toolbar
         visible={showToolbar}
