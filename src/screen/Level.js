@@ -12,7 +12,7 @@ const decodeBoard = (board, level) => {
       id: `${level}-grid-${gIdx}`,
       status: 'basic',
       value: grid,
-      changed: false,
+      changed: 0,
     })),
   }));
 };
@@ -20,7 +20,7 @@ const decodeBoard = (board, level) => {
 const clearStatus = board => {
   board.forEach(row => {
     row.grids.forEach(grid => {
-      grid.changed = false;
+      grid.changed = 0;
     });
   });
   return board;
@@ -91,6 +91,9 @@ const Level = ({route, navigation}) => {
         rowAdd = -1;
       }
       const nextBoard = clearStatus(JSON.parse(JSON.stringify(curBoard)));
+      let changed = new Array(
+        dir === 'up' || dir === 'down' ? width : height,
+      ).fill(1);
       let [i, j] = [rowStart, colStart];
       while (i !== rowEnd) {
         j = colStart;
@@ -124,11 +127,15 @@ const Level = ({route, navigation}) => {
                 val--;
                 fy = y;
                 fx = x;
-                nextBoard[y].grids[x].changed = true;
+                const idx = dir === 'up' || dir === 'down' ? x : y;
+                nextBoard[y].grids[x].changed = changed[idx];
+                changed[idx] += 1;
               } else if (nextBoard[y].grids[x].value > 1) {
                 nextBoard[y].grids[x].value += val;
                 val = 0;
-                nextBoard[y].grids[x].changed = true;
+                const idx = dir === 'up' || dir === 'down' ? x : y;
+                nextBoard[y].grids[x].changed = changed[idx];
+                changed[idx] += 1;
               }
             }
           }

@@ -13,23 +13,13 @@ const Board = ({board = []}) => {
         return (
           <View {...rowProps}>
             {r.grids.map((g, gIdx) => {
-              const gridWrapperProps = {
-                key: g.id,
-                style: [styles.gridContainer],
-              };
-
-              if (g.value >= 0) {
-                gridWrapperProps.style.push(styles.basicGridWrapper);
-              }
-
-              if (gIdx !== 0) {
-                gridWrapperProps.style.push(styles.overlapLeft);
-              }
-
               return (
-                <View {...gridWrapperProps}>
-                  <Grid changed={g.changed} value={g.value} />
-                </View>
+                <Grid
+                  key={g.id}
+                  overlap={gIdx}
+                  value={g.value}
+                  changed={g.changed}
+                />
               );
             })}
           </View>
@@ -42,20 +32,6 @@ const Board = ({board = []}) => {
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-  },
-  gridContainer: {
-    width: 30,
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  basicGridWrapper: {
-    borderWidth: 1,
-    borderColor: '#fff',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  overlapLeft: {
-    marginLeft: -1,
   },
   overlapTop: {
     marginTop: -1,
