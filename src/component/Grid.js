@@ -4,7 +4,7 @@ import {StyleSheet, View, Text, Animated} from 'react-native';
 import {getRandomInt} from '../common/utils';
 import {tintColor} from '../common/theme';
 
-const Grid = ({overlap, value, changed, resetFlag}) => {
+const Grid = ({offset, value, changed, resetFlag}) => {
   const containerWidth = useRef(new Animated.Value(0)).current;
   const internalWidth = useRef(new Animated.Value(0)).current;
 
@@ -36,7 +36,7 @@ const Grid = ({overlap, value, changed, resetFlag}) => {
   }, [changed]);
 
   return (
-    <View style={[styles.container, {left: overlap * -1}]}>
+    <View style={[styles.container, {left: offset * -1}]}>
       <Animated.View
         style={[
           styles.borderContainer,

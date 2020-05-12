@@ -1,6 +1,15 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
+
 import Grid from './Grid';
+
+const getOffset = (width, size, idx) => {
+  if (size % 2 === 0) {
+    return (idx - size / 2 + 0.5) * width;
+  } else {
+    return (idx - (size - 1) / 2) * width;
+  }
+};
 
 const Board = ({board = [], resetFlag}) => {
   return (
@@ -16,7 +25,7 @@ const Board = ({board = [], resetFlag}) => {
               return (
                 <Grid
                   key={g.id}
-                  overlap={gIdx}
+                  offset={getOffset(1, r.grids.length, gIdx)}
                   value={g.value}
                   changed={g.changed}
                   resetFlag={resetFlag}
