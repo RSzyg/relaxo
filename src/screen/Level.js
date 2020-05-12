@@ -52,6 +52,7 @@ const Level = ({route, navigation}) => {
     const nextBoard = decodeBoard(LevelList[level], level);
     setCurBoard(nextBoard);
     setResetFlag(flag => flag + 1);
+    setShowToolbar(false);
   };
 
   const toNextLevel = () => {
