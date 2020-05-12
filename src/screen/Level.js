@@ -1,10 +1,10 @@
-import React, {useState, useMemo} from 'react';
-import {View, StyleSheet, PanResponder} from 'react-native';
+import React, {useState, useMemo, useEffect} from 'react';
+import {View, StyleSheet, PanResponder, Text} from 'react-native';
 
 import Board from '../component/Board';
 import {LevelList} from '../common/config';
 import Toolbar from '../component/Toolbar';
-import {backgroundColorLight} from '../common/theme';
+import {backgroundColorLight, tintColor} from '../common/theme';
 
 const decodeBoard = (board, level) => {
   return board.map((row, rIdx) => ({
@@ -34,33 +34,25 @@ const directionMap = {
   down: [0, 1],
 };
 
-const Level = ({route, navigation}) => {
-  const {level} = route.params;
-
+const Level = ({initLevel = 0, navigation}) => {
+  const [level, setLevel] = useState(initLevel);
+  const [winned, setWinned] = useState(false);
   const [curBoard, setCurBoard] = useState(
     decodeBoard(LevelList[level], level),
   );
-  const width = useMemo(() => LevelList[level][0].length, [level]);
-  const height = useMemo(() => LevelList[level].length, [level]);
   const [direction, setDirection] = useState(undefined);
-
   const [showToolbar, setShowToolbar] = useState(false);
 
   const [resetFlag, setResetFlag] = useState(0);
 
+  const width = useMemo(() => LevelList[level][0].length, [level]);
+  const height = useMemo(() => LevelList[level].length, [level]);
+
   const handleReset = () => {
     const nextBoard = decodeBoard(LevelList[level], level);
     setCurBoard(nextBoard);
-    setResetFlag(flag => flag + 1);
+    setResetFlag(flag => (flag + 1) % 2);
     setShowToolbar(false);
-  };
-
-  const toNextLevel = () => {
-    setTimeout(() => {
-      navigation.navigate('Transition', {
-        level: (level + 1) % LevelList.length,
-      });
-    }, 500);
   };
 
   const checkIfWin = nextBoard => {
@@ -69,11 +61,12 @@ const Level = ({route, navigation}) => {
       for (let j = 0; j < row.grids.length; j++) {
         const grid = row.grids[j];
         if (grid.value === 0) {
+          setWinned(false);
           return false;
         }
       }
     }
-    toNextLevel();
+    setWinned(true);
     return true;
   };
 
@@ -179,9 +172,28 @@ const Level = ({route, navigation}) => {
     onPanResponderRelease: handleRelease,
   });
 
+  useEffect(() => {
+    setCurBoard(decodeBoard(LevelList[level], level));
+  }, [level]);
+
+  useEffect(() => {
+    if (winned) {
+      const timer = setTimeout(() => {
+        setLevel((level + 1) % LevelList.length);
+        setWinned(false);
+      }, 1200);
+
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [winned]);
+
   return (
     <>
       <View style={styles.container} {...panResponder.panHandlers}>
+        <View style={styles.levelNumContainer}>
+          <Text style={styles.levelNum}>{level + 1}</Text>
+        </View>
         <Board board={curBoard} resetFlag={resetFlag} />
       </View>
       <Toolbar
@@ -200,6 +212,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: backgroundColorLight[10],
+  },
+  levelNumContainer: {
+    position: 'absolute',
+    top: 48,
+  },
+  levelNum: {
+    color: tintColor[10],
+    fontSize: 48,
   },
 });
 
