@@ -11,7 +11,7 @@ const getOffset = (width, size, idx) => {
   }
 };
 
-const Board = ({board = [], resetFlag}) => {
+const Board = ({board = [], resetFlag, winned}) => {
   return (
     <View>
       {board.map((r, rIdx) => {
@@ -29,6 +29,8 @@ const Board = ({board = [], resetFlag}) => {
                   value={g.value}
                   changed={g.changed}
                   resetFlag={resetFlag}
+                  winned={winned}
+                  maxLength={Math.max(board.length - 1, r.grids.length - 1)}
                 />
               );
             })}

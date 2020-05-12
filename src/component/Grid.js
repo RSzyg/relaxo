@@ -4,11 +4,11 @@ import {StyleSheet, View, Text, Animated} from 'react-native';
 import {getRandomInt} from '../common/utils';
 import {tintColor} from '../common/theme';
 
-const Grid = ({offset, value, changed, resetFlag}) => {
+const Grid = ({offset, value, changed, resetFlag, winned, maxLength}) => {
   const containerWidth = useRef(new Animated.Value(0)).current;
   const internalWidth = useRef(new Animated.Value(0)).current;
 
-  const scaleIn = (animValue, toValue, delay = 0, duration = 240) =>
+  const scaleAnim = (animValue, toValue, delay = 0, duration = 240) =>
     Animated.timing(animValue, {
       toValue,
       duration,
@@ -19,10 +19,10 @@ const Grid = ({offset, value, changed, resetFlag}) => {
   useEffect(() => {
     const delay = getRandomInt(300, 10);
     if (value >= 0) {
-      const anim = [scaleIn(containerWidth, 1, delay)];
+      const anim = [scaleAnim(containerWidth, 1, delay)];
       containerWidth.setValue(0);
       if (value > 0) {
-        anim.push(scaleIn(internalWidth, 1, delay));
+        anim.push(scaleAnim(internalWidth, 1, delay));
         internalWidth.setValue(0);
       }
       Animated.parallel(anim).start();
@@ -33,10 +33,28 @@ const Grid = ({offset, value, changed, resetFlag}) => {
   useEffect(() => {
     if (changed) {
       internalWidth.setValue(0);
-      scaleIn(internalWidth, 1, (changed - 1) * 60).start();
+      scaleAnim(internalWidth, 1, (changed - 1) * 60).start();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [changed]);
+
+  useEffect(() => {
+    if (winned) {
+      const timer = setTimeout(() => {
+        const delay = getRandomInt(300, 10);
+        if (value >= 0) {
+          const anim = [scaleAnim(containerWidth, 0, delay)];
+          if (value > 0) {
+            anim.push(scaleAnim(internalWidth, 0, delay));
+          }
+          Animated.parallel(anim).start();
+        }
+      }, maxLength * 60 + 720);
+
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [winned]);
 
   return (
     <View style={[styles.container, {left: offset * -1}]}>

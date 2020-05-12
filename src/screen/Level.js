@@ -181,7 +181,7 @@ const Level = ({initLevel = 0, navigation}) => {
       const timer = setTimeout(() => {
         setLevel((level + 1) % LevelList.length);
         setWinned(false);
-      }, 1200);
+      }, Math.max(width - 1, height - 1) * 60 + 1380);
 
       return () => clearTimeout(timer);
     }
@@ -194,7 +194,7 @@ const Level = ({initLevel = 0, navigation}) => {
         <View style={styles.levelNumContainer}>
           <Text style={styles.levelNum}>{level + 1}</Text>
         </View>
-        <Board board={curBoard} resetFlag={resetFlag} />
+        <Board board={curBoard} resetFlag={resetFlag} winned={winned} />
       </View>
       <Toolbar
         visible={showToolbar}
