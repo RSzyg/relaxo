@@ -1,6 +1,8 @@
 import React, {useEffect} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
+import {backgroundColorLight, tintColor} from '../common/theme';
+
 const Transition = ({level, route, navigation}) => {
   if (route.params) {
     level = route.params.level;
@@ -29,10 +31,10 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#424242',
+    backgroundColor: backgroundColorLight[10],
   },
   text: {
-    color: '#fff',
+    color: tintColor[10],
     fontSize: 72,
   },
 });

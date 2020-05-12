@@ -1,6 +1,8 @@
 import React, {useRef, useEffect} from 'react';
 import {StyleSheet, View, Text, Animated} from 'react-native';
+
 import {getRandomInt} from '../common/utils';
+import {tintColor} from '../common/theme';
 
 const Grid = ({overlap, value, changed}) => {
   const containerWidth = useRef(new Animated.Value(0)).current;
@@ -71,8 +73,8 @@ const styles = StyleSheet.create({
   },
   border: {
     borderWidth: 1,
-    borderColor: '#fff',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: tintColor[10],
+    backgroundColor: tintColor[2],
   },
   internal: {
     position: 'absolute',
@@ -86,12 +88,12 @@ const styles = StyleSheet.create({
     height: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: tintColor[3],
     overflow: 'hidden',
   },
   text: {
     fontSize: 18,
-    color: '#fff',
+    color: tintColor[10],
   },
 });
 

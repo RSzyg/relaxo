@@ -2,6 +2,8 @@ import React, {useRef, useEffect} from 'react';
 import {StyleSheet, Animated} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+import {backgroundColorDark, tintColor} from '../common/theme';
+
 const Toolbar = ({visible, setVisible, onReset}) => {
   const toggleOpacity = useRef(new Animated.Value(1)).current;
   const toolbarHeight = useRef(new Animated.Value(0)).current;
@@ -37,13 +39,18 @@ const Toolbar = ({visible, setVisible, onReset}) => {
       <Animated.View style={[styles.toggle, {opacity: toggleOpacity}]}>
         <Icon
           name="ios-arrow-up"
-          color="#fff"
+          color={tintColor[10]}
           size={36}
           onPress={handleToggle}
         />
       </Animated.View>
       <Animated.View style={[styles.toolbar, {height: toolbarHeight}]}>
-        <Icon name="ios-refresh" color="#fff" size={36} onPress={onReset} />
+        <Icon
+          name="ios-refresh"
+          color={tintColor[10]}
+          size={36}
+          onPress={onReset}
+        />
       </Animated.View>
     </>
   );
@@ -64,7 +71,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(33, 33, 33, 0.6)',
+    backgroundColor: backgroundColorDark[6],
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',

@@ -4,6 +4,7 @@ import {View, StyleSheet, PanResponder} from 'react-native';
 import Board from '../component/Board';
 import {LevelList} from '../common/config';
 import Toolbar from '../component/Toolbar';
+import {backgroundColorLight} from '../common/theme';
 
 const decodeBoard = (board, level) => {
   return board.map((row, rIdx) => ({
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#424242',
+    backgroundColor: backgroundColorLight[10],
   },
 });
 
