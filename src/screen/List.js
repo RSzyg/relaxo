@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Dimensions} from 'react-native';
 import {backgroundColorLight, tintColor} from '../common/theme';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
@@ -39,10 +39,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: (Dimensions.get('window').width - 80 - 4 * 48) / 2,
   },
   btnContainer: {
-    padding: 8,
+    padding: 10,
   },
   btn: {
     width: 48,
