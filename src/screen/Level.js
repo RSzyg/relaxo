@@ -1,5 +1,13 @@
-import React, {useState, useMemo, useEffect} from 'react';
-import {View, StyleSheet, PanResponder, Text} from 'react-native';
+import React, {useState, useMemo, useEffect, useRef} from 'react';
+import {
+  View,
+  StyleSheet,
+  PanResponder,
+  Text,
+  Dimensions,
+  Animated,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Board from '../component/Board';
 import {LevelList} from '../common/config';
@@ -47,6 +55,44 @@ const Level = ({route, navigation}) => {
 
   const width = useMemo(() => LevelList[level][0].length, [level]);
   const height = useMemo(() => LevelList[level].length, [level]);
+
+  const pointerPos = useRef(new Animated.ValueXY({x: -30, y: 0})).current;
+  const pointerOpacity = useRef(new Animated.Value(0)).current;
+  const pointerFadeIn = useRef(
+    Animated.timing(pointerOpacity, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }),
+  ).current;
+  const pointerFadeOut = useRef(
+    Animated.timing(pointerOpacity, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }),
+  ).current;
+
+  const pointerLoopAnim = useRef(
+    Animated.loop(
+      Animated.sequence([
+        Animated.delay(300),
+        pointerFadeIn,
+        Animated.timing(pointerPos, {
+          toValue: {x: 30, y: 0},
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        pointerFadeOut,
+        Animated.timing(pointerPos, {
+          toValue: {x: -30, y: 0},
+          duration: 0,
+          useNativeDriver: true,
+        }),
+        Animated.delay(900),
+      ]),
+    ),
+  ).current;
 
   const gotoLevelList = () => {
     navigation.replace('List');
@@ -177,11 +223,11 @@ const Level = ({route, navigation}) => {
   });
 
   useEffect(() => {
-    setCurBoard(decodeBoard(LevelList[level], level));
-  }, [level]);
-
-  useEffect(() => {
     if (winned) {
+      if (level === 0) {
+        pointerLoopAnim.stop();
+        pointerFadeOut.start();
+      }
       const timer = setTimeout(() => {
         setLevel((level + 1) % LevelList.length);
         setWinned(false);
@@ -192,6 +238,18 @@ const Level = ({route, navigation}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [winned]);
 
+  useEffect(() => {
+    setCurBoard(decodeBoard(LevelList[level], level));
+    if (level === 0) {
+      pointerLoopAnim.start();
+    }
+    return () => {
+      pointerLoopAnim.stop();
+      pointerFadeOut.stop();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [level]);
+
   return (
     <>
       <View style={styles.container} {...panResponder.panHandlers}>
@@ -199,6 +257,23 @@ const Level = ({route, navigation}) => {
           <Text style={styles.levelNum}>{level + 1}</Text>
         </View>
         <Board board={curBoard} resetFlag={resetFlag} winned={winned} />
+        {(level === 0 || level === 1) && (
+          <View style={styles.tips}>
+            {level === 0 && (
+              <Animated.View
+                style={{
+                  opacity: pointerOpacity,
+                  transform: [
+                    {translateX: pointerPos.x, translateY: pointerPos.y},
+                  ],
+                }}>
+                <Icon name="hand-pointer-o" size={32} color={tintColor[10]} />
+              </Animated.View>
+            )}
+            {level === 0 && <Text style={styles.tipsText}>swipe to right</Text>}
+            {level === 1 && <Text style={styles.tipsText}>swipe to up</Text>}
+          </View>
+        )}
       </View>
       <Toolbar
         visible={showToolbar}
@@ -225,6 +300,17 @@ const styles = StyleSheet.create({
   levelNum: {
     color: tintColor[10],
     fontSize: 48,
+  },
+  tips: {
+    position: 'absolute',
+    bottom: Dimensions.get('window').height / 4,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  tipsText: {
+    fontSize: 18,
+    color: tintColor[10],
   },
 });
 
