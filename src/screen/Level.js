@@ -48,6 +48,10 @@ const Level = ({route, navigation}) => {
   const width = useMemo(() => LevelList[level][0].length, [level]);
   const height = useMemo(() => LevelList[level].length, [level]);
 
+  const gotoLevelList = () => {
+    navigation.replace('List');
+  };
+
   const handleReset = () => {
     const nextBoard = decodeBoard(LevelList[level], level);
     setCurBoard(nextBoard);
@@ -199,6 +203,7 @@ const Level = ({route, navigation}) => {
       <Toolbar
         visible={showToolbar}
         setVisible={setShowToolbar}
+        onGotoList={gotoLevelList}
         onReset={handleReset}
       />
     </>

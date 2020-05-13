@@ -4,6 +4,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import Level from './src/screen/Level';
 import Home from './src/screen/Home';
+import List from './src/screen/List';
 
 const Stack = createStackNavigator();
 
@@ -14,6 +15,11 @@ const App = () => {
         <Stack.Screen
           name="Home"
           component={Home}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="List"
+          component={List}
           options={{headerShown: false}}
         />
         <Stack.Screen

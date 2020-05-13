@@ -10,6 +10,10 @@ const Home = ({navigation}) => {
     navigation.navigate('Level', {initLevel: 0});
   };
 
+  const gotoList = () => {
+    navigation.navigate('List');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.mainContainer}>
@@ -19,7 +23,7 @@ const Home = ({navigation}) => {
             <Text style={styles.startButtonText}>Start</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.6}>
+        <TouchableOpacity activeOpacity={0.6} onPress={gotoList}>
           <Icon name="nav-icon-grid-a" size={32} color={tintColor[10]} />
         </TouchableOpacity>
       </View>

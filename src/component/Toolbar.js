@@ -1,10 +1,12 @@
 import React, {useRef, useEffect} from 'react';
 import {StyleSheet, Animated} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+import FontistoIcon from 'react-native-vector-icons/Fontisto';
 
 import {backgroundColorDark, tintColor} from '../common/theme';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
-const Toolbar = ({visible, setVisible, onReset}) => {
+const Toolbar = ({visible, setVisible, onGotoList, onReset}) => {
   const toggleOpacity = useRef(new Animated.Value(1)).current;
   const toolbarHeight = useRef(new Animated.Value(0)).current;
 
@@ -37,7 +39,7 @@ const Toolbar = ({visible, setVisible, onReset}) => {
   return (
     <>
       <Animated.View style={[styles.toggle, {opacity: toggleOpacity}]}>
-        <Icon
+        <IonIcon
           name="ios-arrow-up"
           color={tintColor[10]}
           size={36}
@@ -45,12 +47,16 @@ const Toolbar = ({visible, setVisible, onReset}) => {
         />
       </Animated.View>
       <Animated.View style={[styles.toolbar, {height: toolbarHeight}]}>
-        <Icon
-          name="ios-refresh"
-          color={tintColor[10]}
-          size={36}
-          onPress={onReset}
-        />
+        <TouchableOpacity activeOpacity={0.6} onPress={onGotoList}>
+          <FontistoIcon
+            name="nav-icon-grid-a"
+            size={28}
+            color={tintColor[10]}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.6} onPress={onReset}>
+          <IonIcon name="ios-refresh" size={28} color={tintColor[10]} />
+        </TouchableOpacity>
       </Animated.View>
     </>
   );
