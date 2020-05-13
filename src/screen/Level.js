@@ -46,15 +46,16 @@ const Level = ({route, navigation}) => {
   const [level, setLevel] = useState(route?.params?.initLevel || 0);
   const [winned, setWinned] = useState(false);
   const [curBoard, setCurBoard] = useState(
-    decodeBoard(LevelList[level], level),
+    decodeBoard(LevelList[level]?.board, level),
   );
+  const [tips, setTips] = useState(LevelList[level]?.tips);
   const [direction, setDirection] = useState(undefined);
   const [showToolbar, setShowToolbar] = useState(false);
 
   const [resetFlag, setResetFlag] = useState(0);
 
-  const width = useMemo(() => LevelList[level][0].length, [level]);
-  const height = useMemo(() => LevelList[level].length, [level]);
+  const width = useMemo(() => LevelList[level]?.board[0]?.length || 0, [level]);
+  const height = useMemo(() => LevelList[level]?.board?.length || 0, [level]);
 
   const pointerPos = useRef(new Animated.ValueXY({x: -30, y: 0})).current;
   const pointerOpacity = useRef(new Animated.Value(0)).current;
@@ -99,7 +100,7 @@ const Level = ({route, navigation}) => {
   };
 
   const handleReset = () => {
-    const nextBoard = decodeBoard(LevelList[level], level);
+    const nextBoard = decodeBoard(LevelList[level]?.board, level);
     setCurBoard(nextBoard);
     setResetFlag(flag => (flag + 1) % 2);
     setShowToolbar(false);
@@ -239,7 +240,8 @@ const Level = ({route, navigation}) => {
   }, [winned]);
 
   useEffect(() => {
-    setCurBoard(decodeBoard(LevelList[level], level));
+    setCurBoard(decodeBoard(LevelList[level]?.board, level));
+    setTips(LevelList[level]?.tips);
     if (level === 0) {
       pointerLoopAnim.start();
     }
@@ -257,9 +259,9 @@ const Level = ({route, navigation}) => {
           <Text style={styles.levelNum}>{level + 1}</Text>
         </View>
         <Board board={curBoard} resetFlag={resetFlag} winned={winned} />
-        {(level === 0 || level === 1) && (
+        {tips && (
           <View style={styles.tips}>
-            {level === 0 && (
+            {tips.showPointer && (
               <Animated.View
                 style={{
                   opacity: pointerOpacity,
@@ -270,8 +272,7 @@ const Level = ({route, navigation}) => {
                 <Icon name="hand-pointer-o" size={32} color={tintColor[10]} />
               </Animated.View>
             )}
-            {level === 0 && <Text style={styles.tipsText}>swipe to right</Text>}
-            {level === 1 && <Text style={styles.tipsText}>swipe to up</Text>}
+            {tips.text && <Text style={styles.tipsText}>{tips.text}</Text>}
           </View>
         )}
       </View>
