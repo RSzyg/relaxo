@@ -57,7 +57,7 @@ const Level = ({route, navigation}) => {
   const width = useMemo(() => LevelList[level]?.board[0]?.length || 0, [level]);
   const height = useMemo(() => LevelList[level]?.board?.length || 0, [level]);
 
-  const pointerPos = useRef(new Animated.ValueXY({x: -30, y: 0})).current;
+  const pointerPosX = useRef(new Animated.Value(-30)).current;
   const pointerOpacity = useRef(new Animated.Value(0)).current;
   const pointerFadeIn = useRef(
     Animated.timing(pointerOpacity, {
@@ -79,14 +79,14 @@ const Level = ({route, navigation}) => {
       Animated.sequence([
         Animated.delay(300),
         pointerFadeIn,
-        Animated.timing(pointerPos, {
-          toValue: {x: 30, y: 0},
+        Animated.timing(pointerPosX, {
+          toValue: 30,
           duration: 1000,
           useNativeDriver: true,
         }),
         pointerFadeOut,
-        Animated.timing(pointerPos, {
-          toValue: {x: -30, y: 0},
+        Animated.timing(pointerPosX, {
+          toValue: -30,
           duration: 0,
           useNativeDriver: true,
         }),
@@ -265,9 +265,7 @@ const Level = ({route, navigation}) => {
               <Animated.View
                 style={{
                   opacity: pointerOpacity,
-                  transform: [
-                    {translateX: pointerPos.x, translateY: pointerPos.y},
-                  ],
+                  transform: [{translateX: pointerPosX}],
                 }}>
                 <Icon name="hand-pointer-o" size={32} color={tintColor[10]} />
               </Animated.View>
