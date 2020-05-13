@@ -34,8 +34,8 @@ const directionMap = {
   down: [0, 1],
 };
 
-const Level = ({initLevel = 0, navigation}) => {
-  const [level, setLevel] = useState(initLevel);
+const Level = ({route, navigation}) => {
+  const [level, setLevel] = useState(route?.params?.initLevel || 0);
   const [winned, setWinned] = useState(false);
   const [curBoard, setCurBoard] = useState(
     decodeBoard(LevelList[level], level),
